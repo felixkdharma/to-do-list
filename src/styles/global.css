@@ -1,0 +1,20 @@
+body {
+    background-color: #D6DAC8;
+}
+
+h1 {
+    font-family: "Kotta One", serif;
+    font-weight: 400;
+    font-style: normal;
+    color: #9CAFAA;
+    font-size: 96px;
+    text-align: center;
+}
+
+h2 {
+    font-family: "Kotta One", serif;
+    font-weight: 400;
+    font-style: normal;
+    color: #9CAFAA;
+    font-size: 60px;
+}
