@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 function CardToDo(props) {
   const [todos, setTodos] = useState([]);
   const isDone = JSON.parse(props.completed);
+  const isActual = false;
 
   useEffect(() => {
     fetch("http://localhost:5000/api/todos?completed=" + isDone)
