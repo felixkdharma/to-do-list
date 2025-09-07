@@ -6,9 +6,9 @@ function Todolist() {
     <section className="to-do-list-container">
       <h1> My To Do List </h1>
       <div className="card-wrapper">
-        <CardToDo title="List to Do" />
-        <CardToDo title="Actual to Do" />
-        <CardToDo title="Complete" />
+        <CardToDo title="List to Do" completed="false" />
+        <CardToDo title="Actual to Do" completed="false" />
+        <CardToDo title="Complete" completed="true" />
       </div>
     </section>
   );

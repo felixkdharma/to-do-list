@@ -1,0 +1,30 @@
+import Todo from "../../models/todo.js";
+
+// const Todo = db.Todo;
+
+export const getTodos = async (req, res) => {
+  try {
+    let todos;
+    const { completed } = req.query;
+
+    if (completed === "true") {
+      todos = await Todo.findAll({ where: { completed: true } });
+    } else if (completed === "false") {
+      todos = await Todo.findAll({ where: { completed: false } });
+    }
+    res.json(todos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+//Ini injek data
+// let todos = [{ id: 1, task: "Belajar React", completed: false }];
+
+// export const getTodos = (req, res) => res.json(todos);
+
+// export const addTodo = (req, res) => {
+//   const newTodo = { id: Date.now(), ...req.body };
+//   todos.push(newTodo);
+//   res.json(newTodo);
+// };
