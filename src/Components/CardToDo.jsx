@@ -3,10 +3,45 @@ import { useEffect, useState } from "react";
 
 function CardToDo(props) {
   const [todos, setTodos] = useState([]);
+  const [newTodo, setTodo] = useState("");
+  const [showInput, setShowInput] = useState(false);
   const isDone = JSON.parse(props.completed);
   const isActual = false;
 
-  // Add to Actual Todo
+  // Add todo list
+  const addTodo = async () => {
+    if (!newTodo.trim()) return;
+
+    const newItem = { title: newTodo, completed: false };
+
+    const res = await fetch("http://localhost:5000/api/todos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newItem),
+    });
+
+    await res.json();
+
+    // Refresh data untuk mengambil data yang terbaru
+    const refreshData = await fetch("http://localhost:5000/api/todos?completed=false");
+    const text = await refreshData.text();
+    console.log("Raw response:", text);
+
+    try {
+      const data = JSON.parse(text);
+      setTodos(data);
+    } catch (err) {
+      console.error("JSON parse error:", err);
+    }
+
+    // const data = await refreshData.json();
+    // setTodos(data);
+
+    setTodo("");
+    setShowInput(false);
+
+  }
+  // Add to Actual Todo from Todo list
   const addToActual = (e) => {
     const id = e.target.id;
 
@@ -20,21 +55,18 @@ function CardToDo(props) {
       .catch((err) => console.error(err));
   };
 
-  if (props.title == "List to Do") {
-    useEffect(() => {
-      fetch("http://localhost:5000/api/todos?completed=" + isDone)
-        .then((res) => res.json())
-        .then((data) => setTodos(data))
-        .catch((err) => console.error(err));
-    }, []);
-  } else if (props.title == "Actual to Do") {
-    useEffect(() => {
-      fetch("http://localhost:5000/api/actualtodos?completed=" + isDone)
-        .then((res) => res.json())
-        .then((data) => setTodos(data))
-        .catch((err) => console.error(err));
-    }, []);
-  }
+  useEffect(() => {
+    const url =
+      props.title === "List to Do"
+        ? "http://localhost:5000/api/todos?completed=" + isDone
+        : "http://localhost:5000/api/actualtodos?completed=" + isDone;
+
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => setTodos(data))
+      .catch((err) => console.error(err));
+  }, [props.title, isDone]);
+
   // useEffect(() => {
   //   fetch("http://localhost:5000/api/todos?completed=" + isDone)
   //     .then((res) => res.json())
@@ -75,6 +107,19 @@ function CardToDo(props) {
           ))}
         </ul>
 
+        {showInput && (
+          <div style={{ marginTop: "10px" }}>
+            <input
+              type="text"
+              value={newTodo}
+              onChange={(e) => setTodo(e.target.value)}
+              placeholder="Enter new todo"
+            />
+            <button onClick={addTodo}>Save</button>
+            <button onClick={() => setShowInput(false)} > Cancel </button>
+          </div>
+        )}
+
         {!isDone && (
           <img
             style={{
@@ -85,6 +130,7 @@ function CardToDo(props) {
             }}
             src="addbutton.png"
             alt="addbutton"
+            onClick={() => setShowInput(!showInput)}
           />
         )}
       </div>

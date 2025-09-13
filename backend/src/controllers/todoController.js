@@ -11,6 +11,8 @@ export const getTodos = async (req, res) => {
       todos = await Todo.findAll({ where: { completed: true } });
     } else if (completed === "false") {
       todos = await Todo.findAll({ where: { completed: false } });
+    } else {
+      todos = await Todo.findAll();
     }
     res.json(todos);
   } catch (err) {
