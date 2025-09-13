@@ -12,8 +12,15 @@
     margin: 0;
     box-shadow: 5px 5px 15px rgb(102, 102, 102);
     position: relative;
+
+    display: flex;
+    flex-direction: column;
 }
 
+.card ul {
+    flex: 1;
+    overflow-y: auto;
+}
 .font-li {
     display: flex;
     align-items: flex-start;

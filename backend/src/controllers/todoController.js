@@ -11,6 +11,8 @@ export const getTodos = async (req, res) => {
       todos = await Todo.findAll({ where: { completed: true } });
     } else if (completed === "false") {
       todos = await Todo.findAll({ where: { completed: false } });
+    } else {
+      todos = await Todo.findAll();
     }
     res.json(todos);
   } catch (err) {
@@ -18,6 +20,21 @@ export const getTodos = async (req, res) => {
   }
 };
 
+export const addTodos = async (req, res) => {
+  try {
+    const { title, completed } = req.body;
+
+    const newTodo = await Todo.create({
+      title,
+      completed: completed
+    });
+
+    console.log(newTodo);
+    res.status(201).json(newTodo);
+  } catch (err) {
+    res.status(500).json({error: err.message});
+  }
+};
 //Ini injek data
 // let todos = [{ id: 1, task: "Belajar React", completed: false }];
 
