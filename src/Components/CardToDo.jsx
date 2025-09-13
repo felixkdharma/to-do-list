@@ -20,7 +20,6 @@ function CardToDo(props) {
       .catch((err) => console.error(err));
   };
 
-  //sudah saya ganti dengan express.json dan urlencoded req body masih undefined
   if (props.title == "List to Do") {
     useEffect(() => {
       fetch("http://localhost:5000/api/todos?completed=" + isDone)
