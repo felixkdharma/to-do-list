@@ -1,5 +1,6 @@
 import "../styles/cardtodo.css";
 import { useEffect, useState } from "react";
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 function CardToDo(props) {
   const [todos, setTodos] = useState([]);
@@ -78,34 +79,62 @@ function CardToDo(props) {
     <div className="card-to-do-container">
       <h2> {props.title} </h2>
       <div className="card">
-        <ul style={{ marginTop: "5vh" }}>
-          {todos.map((todo) => (
-            <li key={todo.id} className="font-li">
-              {!isDone ? (
-                <img
+        <Scrollbars
+          style={{ right: 7, top: 15, height: "90%"}}
+          autoHide
+          renderThumbVertical={({ style, ...props }) => (
+            <div
+              {...props}
+              style={{
+                ...style,
+                backgroundColor: "#888",
+                borderRadius: "6px",
+                height: "100px", // <-- fix size disini
+              }}
+            />
+          )}
+        >
+          <ul >
+            {todos.map((todo) => (
+              <li key={todo.id} className="layout-li">
+                {!isDone ? (
+                  <img
+                    id={todo.id}
+                    style={{
+                      height: "32px",
+                      width: "32px",
+                    }}
+                    src="/checkbox.png"
+                    alt="checkbox"
+                    onClick={addToActual}
+                  />
+                ) : (
+                  <img
+                    style={{
+                      height: "36px",
+                      width: "36px",
+                    }}
+                    src="/check-mark.png"
+                    alt="checkbox"
+                  />
+                )}
+                <span className="li-text"> {todo.title} </span>
+                <img 
                   id={todo.id}
-                  style={{
-                    height: "32px",
-                    width: "32px",
-                  }}
-                  src="/checkbox.png"
-                  alt="checkbox"
-                  onClick={addToActual}
+                  style={{height:32, width: 32, alignItems: "right"}}
+                  src="/edit.png"
+                  alt="edit icon"
                 />
-              ) : (
-                <img
-                  style={{
-                    height: "36px",
-                    width: "36px",
-                  }}
-                  src="/check-mark.png"
-                  alt="checkbox"
+                                <img 
+                  id={todo.id}
+                  style={{height:32, width: 32, alignItems: "right"}}
+                  src="/edit.png"
+                  alt="edit icon"
                 />
-              )}
-              {todo.title}
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </Scrollbars>
 
         {showInput && (
           <div style={{ marginTop: "10px" }}>
