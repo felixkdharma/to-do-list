@@ -7,9 +7,11 @@ function CardToDo(props) {
   const [newTodo, setTodo] = useState("");
   const [showInput, setShowInput] = useState(false);
   const isDone = JSON.parse(props.completed);
-  const isActual = false;
+  const [editingId, setEditingId] = useState(null);
+  const [editText, setEditText] = useState("");
+  const [originalText, setOriginalText] = useState("");
 
-  // Add todo list
+  /* Add todo list */
   const addTodo = async () => {
     if (!newTodo.trim()) return;
 
@@ -42,7 +44,8 @@ function CardToDo(props) {
     setShowInput(false);
 
   }
-  // Add to Actual Todo from Todo list
+
+  /* Add to Actual Todo from Todo list */
   const addToActual = (e) => {
     const id = e.target.id;
 
@@ -56,6 +59,28 @@ function CardToDo(props) {
       .catch((err) => console.error(err));
   };
 
+  /* Delete Todo */
+  const deleteTodo = (id) => {
+
+    fetch(`http://localhost:5000/api/todos${id}`, {
+      method: "DELETE",
+    });
+
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+
+  }
+
+  /* Edit Todo */
+  const saveEdit = async (id) => {
+    await fetch(`http://localhost:5000/api/todos${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: editText })
+    });
+    setTodos((prev) => prev.map((todo) => todo.id === id ? { ...todo, title: editText } : todo));
+  }
+
+  /* Get Data */
   useEffect(() => {
     const url =
       props.title === "List to Do"
@@ -68,19 +93,37 @@ function CardToDo(props) {
       .catch((err) => console.error(err));
   }, [props.title, isDone]);
 
-  // useEffect(() => {
-  //   fetch("http://localhost:5000/api/todos?completed=" + isDone)
-  //     .then((res) => res.json())
-  //     .then((data) => setTodos(data))
-  //     .catch((err) => console.error(err));
-  // }, []);
+  /* Cancel Edit */
+  const cancelEdit = () => {
+    setEditText(originalText);
+    setEditingId(null);
+  }
 
+  function renderInput(todo) {
+    if (editingId === todo.id) {
+      return (
+        <input
+          type="text"
+          value={editText}
+          autoFocus
+          onChange={(e) => setEditText(e.target.value)}
+          onBlur={() => cancelEdit()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") saveEdit(todo.id);
+            if (e.key === "Esacape") cancelEdit();
+          }}
+        >
+
+        </input>
+      )
+    }
+  }
   return (
     <div className="card-to-do-container">
       <h2> {props.title} </h2>
       <div className="card">
         <Scrollbars
-          style={{ right: 7, top: 15, height: "90%"}}
+          style={{ right: 7, top: 15, height: "90%" }}
           autoHide
           renderThumbVertical={({ style, ...props }) => (
             <div
@@ -118,18 +161,42 @@ function CardToDo(props) {
                     alt="checkbox"
                   />
                 )}
-                <span className="li-text"> {todo.title} </span>
-                <img 
+                
+                {editingId === todo.id ? (
+                  <input
+                    type="text"
+                    value={editText}
+                    autoFocus
+                    onChange={(e) => setEditText(e.target.value)}
+                    onBlur={() => cancelEdit()}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") saveEdit(todo.id);
+                      if (e.key === "Esacape") cancelEdit();
+                    }}
+                  >
+
+                  </input>
+                ) : (
+                  <span className="li-text"> {todo.title} </span>
+                )}
+
+                <img
                   id={todo.id}
-                  style={{height:32, width: 32, alignItems: "right"}}
+                  style={{ height: 32, width: 32, cursor: "pointer" }}
                   src="/edit.png"
                   alt="edit icon"
+                  onClick={() => {
+                    setEditingId(todo.id);
+                    setEditText(todo.title);
+                    setOriginalText(todo.title);
+                  }}
                 />
-                                <img 
+                <img
                   id={todo.id}
-                  style={{height:32, width: 32, alignItems: "right"}}
-                  src="/edit.png"
+                  style={{ height: 32, width: 32, cursor: "pointer" }}
+                  src="/delete.png"
                   alt="edit icon"
+                  onClick={() => deleteTodo(todo.id)}
                 />
               </li>
             ))}
