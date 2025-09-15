@@ -35,6 +35,26 @@ export const addTodos = async (req, res) => {
     res.status(500).json({error: err.message});
   }
 };
+
+export const deleteTodos = async (req, res) => {
+
+  try{
+
+    const {id} = req.params;
+
+    const deleted = await Todo.destroy({
+      where: {id: id}
+    })
+
+    if(!deleted){
+      res.status(404).json({messagge: "ID not found "});
+    }
+    res.status(200).json({message: "Todo deleted successfully "});
+  } catch (err) {
+    res.status(500).json({error: err.message})
+  }
+};
+
 //Ini injek data
 // let todos = [{ id: 1, task: "Belajar React", completed: false }];
 
