@@ -25,13 +25,10 @@ function CardToDo(props) {
 
     await res.json();
 
-    // Refresh data untuk mengambil data yang terbaru
-    const refreshData = await fetch("http://localhost:5000/api/todos?completed=false");
-    const text = await refreshData.text();
-    console.log("Raw response:", text);
-
     try {
-      const data = JSON.parse(text);
+      // Refresh data untuk mengambil data yang terbaru (Todo list only)
+      const refreshData = await fetch("http://localhost:5000/api/todos?completed=false");
+      const data = await refreshData.json();
       setTodos(data);
     } catch (err) {
       console.error("JSON parse error:", err);
@@ -46,10 +43,10 @@ function CardToDo(props) {
   }
 
   /* Add to Actual Todo from Todo list */
-  const addToActual = (e) => {
+  const addToActual = async (e) => {
     const id = e.target.id;
 
-    fetch("http://localhost:5000/api/actualtodos/create-from-todo", {
+    await fetch("http://localhost:5000/api/actualtodos/create-from-todo", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ todoId: id }),
@@ -60,37 +57,49 @@ function CardToDo(props) {
   };
 
   /* Delete Todo */
-  const deleteTodo = (id) => {
+  const deleteTodo = async (id) => {
 
-    fetch(`http://localhost:5000/api/todos${id}`, {
+    console.log(id);
+    await fetch(`http://localhost:5000/api/todos/${id}`, {
       method: "DELETE",
     });
 
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    await refreshTodos();
+    // setTodos((prev) => prev.filter((todo) => todo.id !== id));
 
   }
 
   /* Edit Todo */
   const saveEdit = async (id) => {
-    await fetch(`http://localhost:5000/api/todos${id}`, {
+    await fetch(`http://localhost:5000/api/todos/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: editText })
     });
-    setTodos((prev) => prev.map((todo) => todo.id === id ? { ...todo, title: editText } : todo));
+
+    await refreshTodos();
+    setEditingId(null);
+    // setTodos((prev) => prev.map((todo) => todo.id === id ? { ...todo, title: editText } : todo));
   }
 
+  /* Function Refresh Data */
+  const refreshTodos = async () => {
+    try {
+      const url =
+        props.title === "List to Do"
+          ? "http://localhost:5000/api/todos?completed=" + isDone
+          : "http://localhost:5000/api/actualtodos?completed=" + isDone;
+
+      const res = await fetch(url);
+      const data = await res.json();
+      setTodos(data);
+    } catch (err) {
+      console.error("Fetch Error :", err);
+    }
+  }
   /* Get Data */
   useEffect(() => {
-    const url =
-      props.title === "List to Do"
-        ? "http://localhost:5000/api/todos?completed=" + isDone
-        : "http://localhost:5000/api/actualtodos?completed=" + isDone;
-
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => setTodos(data))
-      .catch((err) => console.error(err));
+    refreshTodos();
   }, [props.title, isDone]);
 
   /* Cancel Edit */
@@ -99,25 +108,6 @@ function CardToDo(props) {
     setEditingId(null);
   }
 
-  function renderInput(todo) {
-    if (editingId === todo.id) {
-      return (
-        <input
-          type="text"
-          value={editText}
-          autoFocus
-          onChange={(e) => setEditText(e.target.value)}
-          onBlur={() => cancelEdit()}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") saveEdit(todo.id);
-            if (e.key === "Esacape") cancelEdit();
-          }}
-        >
-
-        </input>
-      )
-    }
-  }
   return (
     <div className="card-to-do-container">
       <h2> {props.title} </h2>
@@ -161,7 +151,7 @@ function CardToDo(props) {
                     alt="checkbox"
                   />
                 )}
-                
+
                 {editingId === todo.id ? (
                   <input
                     type="text"
@@ -170,8 +160,10 @@ function CardToDo(props) {
                     onChange={(e) => setEditText(e.target.value)}
                     onBlur={() => cancelEdit()}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") saveEdit(todo.id);
-                      if (e.key === "Esacape") cancelEdit();
+                      if (e.key === "Enter") {
+                        saveEdit(todo.id);
+                        setEditingId(null);
+                      } else if (e.key === "Esacape") cancelEdit();
                     }}
                   >
 
