@@ -25,7 +25,7 @@ export const addTodos = async (req, res) => {
     const { title, completed } = req.body;
 
     const newTodo = await Todo.create({
-      title,
+      title, 
       completed: completed
     });
 
@@ -42,6 +42,7 @@ export const deleteTodos = async (req, res) => {
 
     const {id} = req.params;
 
+    console.log(req.params);
     const deleted = await Todo.destroy({
       where: {id: id}
     })
@@ -52,6 +53,25 @@ export const deleteTodos = async (req, res) => {
     res.status(200).json({message: "Todo deleted successfully "});
   } catch (err) {
     res.status(500).json({error: err.message})
+  }
+};
+
+export const editTodos = async (req, res) => {
+  try{
+
+    const {id} = req.params;
+    const {title} = req.body;
+
+    const todo = await Todo.findByPk(id);
+
+    if (!todo) return res.status(404).json({error: "Todo not found"});
+
+    todo.title = title;
+
+    await todo.save();
+
+  } catch (err) {
+    res.status(500).json({error: err.message});
   }
 };
 

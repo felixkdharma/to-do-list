@@ -13,6 +13,12 @@ app.use(express.json()); // parse JSON
 app.use(express.urlencoded({ extended: true })); // parse form
 
 app.use("/api/todos", todoRoutes);
+
+/*Untuk console.log hit URL */
+// app.use("/api/todos", (req, res, next) => {
+//   console.log("Todos route hit:", req.method, req.url);
+//   next();
+// }, todoRoutes);
 app.use("/api/actualtodos", actualTodoRoutes);
 
 const PORT = 5000; // backend jalan di 5000, jangan 3000 (bentrok React)
