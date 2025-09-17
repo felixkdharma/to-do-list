@@ -46,6 +46,22 @@ function CardToDo(props) {
   const addToActual = async (e) => {
     const id = e.target.id;
 
+    try {
+
+      const res = await fetch("http://localhost:5000/api/actualtodos/create-from-todo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ todoId: id }),
+      });
+
+      if(!res) {
+        throw new Error("Failed add to actual todos! ");
+      }
+
+      const data = await res.json();
+    } catch (err) {
+
+    }
     await fetch("http://localhost:5000/api/actualtodos/create-from-todo", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
