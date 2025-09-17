@@ -4,13 +4,16 @@ import Todo from "../../models/todo.js";
 export const getActualTodos = async (req, res) => {
   try {
     let actualtodos;
-    const { completed } = req.query;
 
-    if (completed === "true") {
-      actualtodos = await ActualTodo.findAll({ where: { completed: true } });
-    } else if (completed === "false") {
-      actualtodos = await ActualTodo.findAll({ where: { completed: false } });
-    }
+    actualtodos = await ActualTodo.findAll();
+
+    // const { completed } = req.query;
+
+    // if (completed === "true") {
+    //   actualtodos = await ActualTodo.findAll({ where: { completed: true } });
+    // } else if (completed === "false") {
+    //   actualtodos = await ActualTodo.findAll({ where: { completed: false } });
+    // }
     res.json(actualtodos);
   } catch (err) {
     res.status(500).json({ error: err.message });
