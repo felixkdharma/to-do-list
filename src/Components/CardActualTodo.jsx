@@ -1,28 +1,32 @@
 import "../styles/cardtodo.css";
 import { useEffect, useState } from "react";
 import { Scrollbars } from 'react-custom-scrollbars-2';
+import { TextField } from "@mui/material";
 
 function CardActualTodo(props) {
 
-    const [actualTodos, setActualTodos] = useState([]);
+    const [newActualTodo, setNewActualTodo] = useState("");
+    const [showInput, setShowInput] = useState(false);
 
-    // Function Get Actual Todos
-    const refreshDatas = async () => {
+    const addActualTodo = async () => {
+
         try {
-            const url = "http://localhost:5000/api/actualtodos";
 
-            const res = await fetch(url);
-            const data = await res.json();
+            const newItem = { title: newActualTodo, completed: false };
 
-            setActualTodos(data);
+            await fetch("http://localhost:5000/api/actualtodos", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newItem),
+            });
+
+            setNewActualTodo("");
+            await props.refreshActualTodos();
+
         } catch (err) {
-            console.log("Refresh Data Error: ", err);
+            console.log("Error : ", err);
         }
     }
-
-    useEffect(() => {
-        refreshDatas();
-    }, [props.title])
 
     return (
         <div className="card-to-do-container">
@@ -46,8 +50,8 @@ function CardActualTodo(props) {
                 >
 
                     <ul>
-                        {actualTodos && actualTodos.length > 0 ? (
-                            actualTodos.map((actualTodo) => (
+                        {props.actualTodos && props.actualTodos.length > 0 ? (
+                            props.actualTodos.map((actualTodo) => (
                                 <li key={actualTodo.id} className="layout-li">
                                     <img id={actualTodo.id}
                                         style={{
@@ -57,16 +61,21 @@ function CardActualTodo(props) {
                                         src="/checkbox.png"
                                         alt="checkbox" />
 
+                                    {showInput && (
+                                        <TextField>
+                                            
+                                        </TextField>
+                                    )} 
                                     <span className="li-text"> {actualTodo.title} </span>
 
                                     <img
-                                        id={todo.id}
+                                        id={actualTodo.id}
                                         style={{ height: 32, width: 32, cursor: "pointer" }}
                                         src="/edit.png"
                                         alt="edit icon"
                                     />
                                     <img
-                                        id={todo.id}
+                                        id={actualTodo.id}
                                         style={{ height: 32, width: 32, cursor: "pointer" }}
                                         src="/delete.png"
                                         alt="edit icon"
@@ -82,6 +91,19 @@ function CardActualTodo(props) {
 
                     </ul>
                 </Scrollbars>
+
+                <img
+                    style={{
+                        cursor: "pointer",
+                        position: "absolute",
+                        bottom: "-2.5vh",
+                        left: "6vw",
+                    }}
+                    src="addbutton.png"
+                    alt="addbutton"
+                    onClick={() =>setShowInput(!showInput)}
+                // onClick={() => setShowInput(!showInput)}
+                />
 
             </div>
 
