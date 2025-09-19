@@ -17,27 +17,14 @@ function CardToDo(props) {
 
     const newItem = { title: newTodo, completed: false };
 
-    const res = await fetch("http://localhost:5000/api/todos", {
+    await fetch("http://localhost:5000/api/todos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newItem),
     });
 
-    await res.json();
-
-    try {
-      // Refresh data untuk mengambil data yang terbaru (Todo list only)
-      const refreshData = await fetch("http://localhost:5000/api/todos?completed=false");
-      const data = await refreshData.json();
-      setTodos(data);
-    } catch (err) {
-      console.error("JSON parse error:", err);
-    }
-
-    // const data = await refreshData.json();
-    // setTodos(data);
-
     setTodo("");
+    await props.refreshTodos();
     setShowInput(false);
 
   }
@@ -54,69 +41,50 @@ function CardToDo(props) {
         body: JSON.stringify({ todoId: id }),
       });
 
-      if(!res) {
+      if (!res) {
         throw new Error("Failed add to actual todos! ");
       }
 
-      const data = await res.json();
-    } catch (err) {
+      await props.refreshActualTodos();
 
+    } catch (err) {
+      console.log("Failed to Inert into Actual Todo ", err)
     }
-    await fetch("http://localhost:5000/api/actualtodos/create-from-todo", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ todoId: id }),
-    })
-      .then((res) => res.json())
-      .then(() => alert(`Todo ${id} berhasil ditambahkan ✅`))
-      .catch((err) => console.error(err));
   };
 
   /* Delete Todo */
   const deleteTodo = async (id) => {
 
-    console.log(id);
-    await fetch(`http://localhost:5000/api/todos/${id}`, {
-      method: "DELETE",
-    });
+    try {
 
-    await refreshTodos();
-    // setTodos((prev) => prev.filter((todo) => todo.id !== id));
+      await fetch(`http://localhost:5000/api/todos/${id}`, {
+        method: "DELETE",
+      });
+    } catch (err) {
+      console.log("Failed to Delete Todo: ", err);
+    }
+
+    await props.refreshTodos();
 
   }
 
   /* Edit Todo */
   const saveEdit = async (id) => {
-    await fetch(`http://localhost:5000/api/todos/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: editText })
-    });
 
-    await refreshTodos();
+    try {
+      await fetch(`http://localhost:5000/api/todos/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: editText })
+      });
+    } catch (err) {
+      console.log("Failed to Edit Todo: ", err);
+    }
+
+    await props.refreshTodos();
     setEditingId(null);
     // setTodos((prev) => prev.map((todo) => todo.id === id ? { ...todo, title: editText } : todo));
   }
-
-  /* Function Refresh Data */
-  const refreshTodos = async () => {
-    try {
-      const url =
-        props.title === "List to Do"
-          ? "http://localhost:5000/api/todos?completed=" + isDone
-          : "http://localhost:5000/api/actualtodos?completed=" + isDone;
-
-      const res = await fetch(url);
-      const data = await res.json();
-      setTodos(data);
-    } catch (err) {
-      console.error("Fetch Error :", err);
-    }
-  }
-  /* Get Data */
-  useEffect(() => {
-    refreshTodos();
-  }, [props.title, isDone]);
 
   /* Cancel Edit */
   const cancelEdit = () => {
@@ -144,7 +112,7 @@ function CardToDo(props) {
           )}
         >
           <ul >
-            {todos.map((todo) => (
+             {Array.isArray(props.todos) && props.todos.map((todo) => (
               <li key={todo.id} className="layout-li">
                 {!isDone ? (
                   <img

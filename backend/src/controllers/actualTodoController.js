@@ -6,19 +6,65 @@ export const getActualTodos = async (req, res) => {
     let actualtodos;
 
     actualtodos = await ActualTodo.findAll();
-
-    // const { completed } = req.query;
-
-    // if (completed === "true") {
-    //   actualtodos = await ActualTodo.findAll({ where: { completed: true } });
-    // } else if (completed === "false") {
-    //   actualtodos = await ActualTodo.findAll({ where: { completed: false } });
-    // }
     res.json(actualtodos);
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const addActualTodos = async (req, res) => {
+
+  try {
+    const {title, completed} = req.body;
+
+    const newActualTodo = await ActualTodo.create({
+      title,
+      completed: completed
+    });
+
+    console.log(newActualTodo);
+    res.status(201).json(newActualTodo);
+  } catch (err) {
+    res.status(500).json({error: err.message});
+  }
+
+}
+
+export const editActualTodos = async (req, res) => {
+
+  try {
+
+    const {id} = req.params;
+    const {title} = req.body;
+
+    const actualTodo = await ActualTodo.findByPk(id);
+
+    if (!actualTodo) return res.status(404).json({error: "Actual Todo not Found! "});
+
+    await actualTodo.update({title: title});
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+export const dataleteActualTodos = async (req, res) => {
+  try {
+
+    const {id} = req.params;
+
+    const deleted = await ActualTodo.destroy({
+      where: {id: id}
+    })
+
+    if (!deleted) {
+      res.status(404).json({message: "ID not Found! "});
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
 
 export const createFromTodoList = async (req, res) => {
   try {
