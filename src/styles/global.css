@@ -18,3 +18,17 @@ h2 {
     color: #9CAFAA;
     font-size: 60px;
 }
+
+.MuiInputBase-input {
+    font-family: "Kotta One", serif !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    color: #9CAFAA !important;
+}
+
+.MuiInputLabel-root {
+    font-family: "Kotta One", serif !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    color: #9CAFAA !important;
+}

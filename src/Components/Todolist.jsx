@@ -6,46 +6,39 @@ import { useState, useEffect } from "react";
 function Todolist() {
   const [todos, setTodos] = useState([]);
   const [actualTodos, setActualTodos] = useState([]);
+  const [editedText, setEditedText] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [originalText, setOriginalText] = useState("");
 
   //Refresh Todos
   const refreshTodos = async () => {
-
     try {
       const url = "http://localhost:5000/api/todos";
       const res = await fetch(url);
       const data = await res.json();
       setTodos(data);
-
     } catch (err) {
-
       console.log("Error : ", err);
-
     }
-  }
+  };
 
   //Refresh Actual Todos
   const refreshActualTodos = async () => {
-
     try {
-
       const url = "http://localhost:5000/api/actualtodos";
       const res = await fetch(url);
       const data = await res.json();
       setActualTodos(data);
-
     } catch (err) {
-
       console.log("Error : ", err);
-
     }
-
-  }
+  };
 
   useEffect(() => {
     refreshTodos();
     refreshActualTodos();
   }, []);
-  
+
   return (
     <section className="to-do-list-container">
       <h1> My To Do List </h1>
@@ -55,11 +48,13 @@ function Todolist() {
           completed="false"
           todos={todos}
           refreshTodos={refreshTodos}
-          refreshActualTodos={refreshActualTodos} />
+          refreshActualTodos={refreshActualTodos}
+        />
         <CardActualTodo
           title="Actual to Do"
           refreshActualTodos={refreshActualTodos}
-          actualTodos={actualTodos} />
+          actualTodos={actualTodos}
+        />
         {/* <CardToDo title="Actual to Do" completed="false" /> */}
         <CardToDo title="Complete" completed="true" />
       </div>

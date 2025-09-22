@@ -13,6 +13,7 @@
     box-shadow: 5px 5px 15px rgb(102, 102, 102);
     position: relative;
 }
+
 /* .card ul {
     flex: 1;
     overflow: auto;
@@ -39,4 +40,10 @@
     text-align: left;
     flex: 1;
     word-break: break-word;
+}
+
+.input-new-todo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
