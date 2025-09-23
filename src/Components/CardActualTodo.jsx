@@ -37,6 +37,56 @@ function CardActualTodo(props) {
     }
   };
 
+  const saveActualTodo = async(id) => {
+
+    try {
+        console.log("Id Edited : ", id);
+        const updatedItem = {title: editText};
+        const url = "http://localhost:5000/api/actualtodos/" + id;
+        await fetch(url, {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(updatedItem),
+        });
+
+        await props.refreshActualTodos();
+        setEditText("");
+        setEditingId(null);
+
+    } catch (err) {
+      console.log("Error : ", err);
+    }
+
+  }
+
+const setCompleteTodo = async(id) => {
+
+  try {
+    const url = "http://localhost:5000/api/completetodoss/" + id;
+    await fetch(url, {
+      method: "PUT",
+    });
+
+    await props.refreshCompleteTodos
+  } catch (err) {
+    console.log("Error : ", err);
+  }
+
+}
+const deleteActualTodo = async(id) => {
+
+    try {
+        const url = "http://localhost:5000/api/actualtodos/" + id;
+        await fetch(url, {
+            method: "DELETE",
+        });
+
+        await props.refreshActualTodos();
+    } catch (err) {
+        console.log("Error : ", err);
+    }
+}
+
   const cancelEdit = () => {
     setEditText(originalText);
     setEditingId(null);
@@ -65,13 +115,14 @@ function CardActualTodo(props) {
           <ul>
             {props.actualTodos && props.actualTodos.length > 0 ? (
               props.actualTodos.map((actualTodo) => (
-                <li key={actualTodo.id} className="layout-li">
+                <li key={`${actualTodo.id}-${actualTodo.title}`} className="layout-li">
                   <img
                     id={actualTodo.id}
                     style={{
                       height: "32px",
                       width: "32px",
                     }}
+                    onClick={() => setCompleteTodo(actualTodo.id)}
                     src="/checkbox.png"
                     alt="checkbox"
                   />
@@ -83,10 +134,13 @@ function CardActualTodo(props) {
                       value={editText}
                       type="text"
                       variant="standard"
-                      onBlur={() => cancelEdit()}
+                      onChange={(e) => setEditText(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === "Escape") {
                           cancelEdit();
+                        } else if (e.key === "Enter") {
+                          saveActualTodo(actualTodo.id);
+                          setEditingId(null)
                         }
                       }}
                     ></TextField>
@@ -109,7 +163,8 @@ function CardActualTodo(props) {
                     id={actualTodo.id}
                     style={{ height: 32, width: 32, cursor: "pointer" }}
                     src="/delete.png"
-                    alt="edit icon"
+                    alt="delete icon"
+                    onClick={() => {deleteActualTodo(actualTodo.id)}}
                   />
                 </li>
               ))
