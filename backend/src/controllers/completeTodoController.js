@@ -1,31 +1,15 @@
-import ActualTodo from "../../models/actualtodo.js";
 import CompleteTodo from "../../models/completetodo.js";
+import ActualTodo from "../../models/actualtodo.js";
 
 export const getCompleteTodos = async (req, res) => {
+  try {
+    let completetodos;
+    completetodos = await ActualTodo.findAll({
+      order: [["id", "ASC"]],
+    });
 
-    try {
-        let completetodos;
-        completetodos = await CompleteTodo.findAll({
-            order: [["id", "ASC"]],
-        });
-
-        res.status(200).json(completetodos);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-}
-
-export const setCompleteTodos = async (req, res) => {
-
-    try {
-        const { title } = req.body;
-        let newCompleteTodo = await CompleteTodo.create({
-            title: title,
-            completed: true,
-        });
-
-        res.status(201).json(newCompleteTodo);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-}
+    res.status(200).json(completetodos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

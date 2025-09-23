@@ -1,15 +1,13 @@
 import "../styles/todolist.css";
 import CardToDo from "./CardToDo";
 import CardActualTodo from "./CardActualTodo";
+import CompleteTodo from "./CompleteTodo";
 import { useState, useEffect } from "react";
 
 function Todolist() {
   const [todos, setTodos] = useState([]);
   const [actualTodos, setActualTodos] = useState([]);
   const [completeTodos, setCompleteTodos] = useState([]);
-  const [editedText, setEditedText] = useState("");
-  const [editingId, setEditingId] = useState(null);
-  const [originalText, setOriginalText] = useState("");
 
   //Refresh Todos
   const refreshTodos = async () => {
@@ -45,12 +43,10 @@ function Todolist() {
       const data = await res.json();
 
       setCompleteTodos([...data]);
-
     } catch (err) {
       console.log("Error : ", err);
     }
-    
-  }
+  };
 
   useEffect(() => {
     refreshTodos();
@@ -72,14 +68,14 @@ function Todolist() {
         <CardActualTodo
           title="Actual to Do"
           refreshActualTodos={refreshActualTodos}
+          refreshCompleteTodos={refreshCompleteTodos}
           actualTodos={actualTodos}
         />
-        {/* <CardToDo title="Actual to Do" completed="false" /> */}
-        <CardToDo 
-          title="Complete" 
-          completed="true"
+        <CompleteTodo
+          title="Complete"
           refreshCompleteTodos={refreshCompleteTodos}
-          completeTodos={completeTodos} />
+          completeTodos={completeTodos}
+        />
       </div>
     </section>
   );

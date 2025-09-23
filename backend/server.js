@@ -6,7 +6,8 @@ import actualTodoRoutes from "./src/routes/actualtodo.js";
 import completeTodoRoutes from "./src/routes/completetodo.js";
 import sequelize from "./config/database.js";
 
-sequelize.sync()
+sequelize
+  .sync()
   .then(() => console.log("Database synced"))
   .catch((err) => console.error("Sync error:", err));
 
@@ -26,7 +27,15 @@ app.use("/api/todos", todoRoutes);
 //   next();
 // }, todoRoutes);
 app.use("/api/actualtodos", actualTodoRoutes);
-app.use("/api/completetodos", completeTodoRoutes);
+// app.use("/api/completetodos", completeTodoRoutes);
+app.use(
+  "/api/completetodos",
+  (req, res, next) => {
+    console.log("HIT:", req.originalUrl);
+    next();
+  },
+  completeTodoRoutes
+);
 
 const PORT = 5000; // backend jalan di 5000, jangan 3000 (bentrok React)
 app.listen(PORT, () =>
