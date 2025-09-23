@@ -84,3 +84,21 @@ export const createFromTodoList = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const setCompleteTodos = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const completetodo = await ActualTodo.findByPk(id);
+
+    if (!completetodo)
+      return res.status(404).json({ error: "Todo not Found! " });
+
+    // update langsung instance
+    completetodo.completed = true;
+    await completetodo.save();
+
+    res.status(201).json(completetodo);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

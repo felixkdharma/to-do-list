@@ -4,7 +4,8 @@ import {
   createFromTodoList,
   addActualTodos,
   editActualTodos,
-  dataleteActualTodos
+  dataleteActualTodos,
+  setCompleteTodos,
 } from "../controllers/actualTodoController.js";
 
 const router = express.Router();
@@ -14,6 +15,7 @@ router.post("/create-from-todo", createFromTodoList);
 router.post("/", addActualTodos);
 router.delete("/:id", dataleteActualTodos);
 router.put("/:id", editActualTodos);
+router.put("/:id", setCompleteTodos);
 
 // router.post("/", addTodo);
 

@@ -37,55 +37,52 @@ function CardActualTodo(props) {
     }
   };
 
-  const saveActualTodo = async(id) => {
-
+  const saveActualTodo = async (id) => {
     try {
-        console.log("Id Edited : ", id);
-        const updatedItem = {title: editText};
-        const url = "http://localhost:5000/api/actualtodos/" + id;
-        await fetch(url, {
-            method: "PUT",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(updatedItem),
-        });
+      console.log("Id Edited : ", id);
+      const updatedItem = { title: editText };
+      const url = "http://localhost:5000/api/actualtodos/" + id;
+      await fetch(url, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedItem),
+      });
 
-        await props.refreshActualTodos();
-        setEditText("");
-        setEditingId(null);
-
+      await props.refreshActualTodos();
+      setEditText("");
+      setEditingId(null);
     } catch (err) {
       console.log("Error : ", err);
     }
+  };
 
-  }
-
-const setCompleteTodo = async(id) => {
-
-  try {
-    const url = "http://localhost:5000/api/completetodoss/" + id;
-    await fetch(url, {
-      method: "PUT",
-    });
-
-    await props.refreshCompleteTodos
-  } catch (err) {
-    console.log("Error : ", err);
-  }
-
-}
-const deleteActualTodo = async(id) => {
-
+  const setCompleteTodo = async (id) => {
     try {
-        const url = "http://localhost:5000/api/actualtodos/" + id;
-        await fetch(url, {
-            method: "DELETE",
-        });
+      console.log("Id Completed : ", id);
+      const url = "http://localhost:5000/api/actualtodos/" + id;
+      await fetch(url, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        // body: JSON.stringify({ id: id }),
+      });
 
-        await props.refreshActualTodos();
+      await props.refreshCompleteTodos();
     } catch (err) {
-        console.log("Error : ", err);
+      console.log("Error : ", err);
     }
-}
+  };
+  const deleteActualTodo = async (id) => {
+    try {
+      const url = "http://localhost:5000/api/actualtodos/" + id;
+      await fetch(url, {
+        method: "DELETE",
+      });
+
+      await props.refreshActualTodos();
+    } catch (err) {
+      console.log("Error : ", err);
+    }
+  };
 
   const cancelEdit = () => {
     setEditText(originalText);
@@ -115,12 +112,16 @@ const deleteActualTodo = async(id) => {
           <ul>
             {props.actualTodos && props.actualTodos.length > 0 ? (
               props.actualTodos.map((actualTodo) => (
-                <li key={`${actualTodo.id}-${actualTodo.title}`} className="layout-li">
+                <li
+                  key={`${actualTodo.id}-${actualTodo.title}`}
+                  className="layout-li"
+                >
                   <img
                     id={actualTodo.id}
                     style={{
                       height: "32px",
                       width: "32px",
+                      cursor: "pointer",
                     }}
                     onClick={() => setCompleteTodo(actualTodo.id)}
                     src="/checkbox.png"
@@ -140,7 +141,7 @@ const deleteActualTodo = async(id) => {
                           cancelEdit();
                         } else if (e.key === "Enter") {
                           saveActualTodo(actualTodo.id);
-                          setEditingId(null)
+                          setEditingId(null);
                         }
                       }}
                     ></TextField>
@@ -164,13 +165,15 @@ const deleteActualTodo = async(id) => {
                     style={{ height: 32, width: 32, cursor: "pointer" }}
                     src="/delete.png"
                     alt="delete icon"
-                    onClick={() => {deleteActualTodo(actualTodo.id)}}
+                    onClick={() => {
+                      deleteActualTodo(actualTodo.id);
+                    }}
                   />
                 </li>
               ))
             ) : (
               <div>
-                <span> There is no Actual Todo </span>
+                <p> There is no Actual Todo </p>
               </div>
             )}
           </ul>
