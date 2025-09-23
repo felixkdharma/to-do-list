@@ -5,7 +5,9 @@ export const getActualTodos = async (req, res) => {
   try {
     let actualtodos;
 
-    actualtodos = await ActualTodo.findAll();
+    actualtodos = await ActualTodo.findAll({
+      order: [["id", "ASC"]],
+    });
     res.json(actualtodos);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -40,6 +42,8 @@ export const editActualTodos = async (req, res) => {
       return res.status(404).json({ error: "Actual Todo not Found! " });
 
     await actualTodo.update({ title: title });
+
+    res.status(200).json(actualTodo);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -56,6 +60,8 @@ export const dataleteActualTodos = async (req, res) => {
     if (!deleted) {
       res.status(404).json({ message: "ID not Found! " });
     }
+
+    res.status(200).json({ message: "Actual Todo deleted successfully " });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
